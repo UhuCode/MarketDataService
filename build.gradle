@@ -29,7 +29,7 @@ dependencies {
     // JPA Data (We are going to use Repositories, Entities, Hibernate, etc...)
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    compile group: 'com.yahoofinance-api', name: 'YahooFinanceAPI', version: '3.12.3'
+    compile group: 'com.yahoofinance-api', name: 'YahooFinanceAPI', version: '3.13.0'
     //compile group: 'org.triller.accounting', name: 'accounting', version: '1.0-SNAPSHOT'
     runtime('com.h2database:h2')
 	runtime('mysql:mysql-connector-java')

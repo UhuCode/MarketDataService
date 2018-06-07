@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.uhucode.finman.domain.StockSymbol;
 import ch.uhucode.finman.domain.StockQuote;
 import ch.uhucode.finman.service.StockDataService;
+import ch.uhucode.finman.service.YahooFinanceService;
 import ch.uhucode.finman.service.YahooStockDataService;
 import yahoofinance.Stock;
 import yahoofinance.histquotes.HistoricalQuote;
@@ -34,7 +35,7 @@ public class StockDataController {
 	private StockDataService stockDataService;
 	
 	@Autowired
-	private YahooStockDataService yahooStockDataService;
+	private YahooFinanceService yahooFinanceService;
 	
 	
 	@GetMapping(path="/update") // Map ONLY GET Requests
@@ -42,49 +43,29 @@ public class StockDataController {
 		// @ResponseBody means the returned String is the response, not a view name
 		// @RequestParam means it is a parameter from the GET or POST request
 		
-		StockSymbol stock = stockDataService.getStock(symbol);
-		if (stock == null) {
-			StockSymbol n = new StockSymbol();
-			n.setSymbol(symbol);
-			Stock s = null;
-			try {
-				s = yahooStockDataService.getStock(symbol, false);
-				n.setName(s.getName());
-				n.setCurrency(s.getCurrency());
-				n.setExchange(s.getStockExchange());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			stock = stockDataService.saveOrUpdate(n);
-		}
-		List<HistoricalQuote> list = yahooStockDataService.getStockHistory(symbol, false);
-		List<StockQuote> stockQuotes = map(list);
-		stockDataService.addStockQuotes(stock, stockQuotes);
-		return "updated";
+		StockSymbol stock = yahooFinanceService.updateStockSymbol(symbol);
+		return "Stock updated";
 	}
 	
-	private static List<StockQuote> map(List<HistoricalQuote> list) {
-		List<StockQuote> ml = new ArrayList<StockQuote>();
-		for(HistoricalQuote hq : list) {
-			StockQuote he = new StockQuote();
-			he.setTimepoint(new Date(hq.getDate().getTimeInMillis()));
-			he.setOpen(hq.getOpen());
-			he.setHigh(hq.getHigh());
-			he.setLow(hq.getLow());
-			he.setClose(hq.getClose());
-			he.setVolume(hq.getVolume());
-			ml.add(he);
-		}
-		return ml;
-
+	@GetMapping(path="/updateHistory") // Map ONLY GET Requests
+	public @ResponseBody String updateHistory (@RequestParam String symbol) {
+		// @ResponseBody means the returned String is the response, not a view name
+		// @RequestParam means it is a parameter from the GET or POST request
+		
+		yahooFinanceService.updateStockQuotes(symbol);
+		return "Stock History updated";
+	}
+	
+	@GetMapping(path="/showHistory")
+	public @ResponseBody Iterable<StockQuote> showStocks(@RequestParam String symbol) {
+		StockSymbol s = stockDataService.getStock(symbol);
+		return stockDataService.getStockQuotes(s);
 	}
 
-
-	@GetMapping(path="/all")
-	public @ResponseBody Iterable<StockSymbol> getAllStocks() {
+	@GetMapping(path="/showStock")
+	public @ResponseBody StockSymbol showStock(@RequestParam String symbol) {
 		// This returns a JSON or XML with the stocks
-		return stockDataService.getAllStocks();
+		return stockDataService.getStock(symbol);
 	}
 
 }

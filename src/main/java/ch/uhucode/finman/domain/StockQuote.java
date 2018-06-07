@@ -175,6 +175,10 @@ public class StockQuote {
 	public void setLastModified(Timestamp lastModified) {
 		this.lastModified = lastModified;
 	}
+	
+	public String toString() {
+		return "StockQuote: " + "id: " + id + " symbol: " + stockSymbol.getSymbol() +  " timepoint: " + timepoint;
+	}
     
 
 }

@@ -19,8 +19,12 @@ public interface StockDataService {
 	public StockSymbol saveOrUpdate(StockSymbol stock);
 	
 	public void addStockQuotes(StockSymbol stock, List<StockQuote> stockQuotes);
+	
+	public StockQuote addStockQuote(StockSymbol stock, StockQuote stockQuote);
 
-	public Iterable<StockSymbol> getAllStocks();
+	public Iterable<StockSymbol> getStocks();
+
+	public Iterable<StockQuote> getStockQuotes(StockSymbol s);
 	
 	
 }
